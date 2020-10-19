@@ -3,8 +3,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -32,10 +33,11 @@ export class Issue {
   @Column()
   tags: string;
 
-  @OneToMany(
+  @ManyToMany(
     () => User,
     liker => liker.likeIssues,
     { cascade: true },
   )
+  @JoinTable()
   likers: User[];
 }

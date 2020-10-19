@@ -3,7 +3,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -29,7 +30,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: "" })
+  @Column({ default: '' })
   avatar: string;
 
   @Column({ nullable: true })
@@ -42,9 +43,10 @@ export class User {
   )
   issues: Issue[];
 
-  @ManyToOne(
+  @ManyToMany(
     () => Issue,
     issue => issue.author,
   )
+  @JoinTable()
   likeIssues: Issue[];
 }
