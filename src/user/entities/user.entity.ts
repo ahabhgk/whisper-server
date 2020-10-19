@@ -33,7 +33,7 @@ export class User {
   @Column({ default: '' })
   avatar: string;
 
-  @Column({ nullable: true })
+  @Column({ default: '' })
   description: string;
 
   @OneToMany(

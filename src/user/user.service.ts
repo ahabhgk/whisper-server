@@ -19,7 +19,7 @@ export class UserService {
   findAll(paginationQueryDto: PaginationQueryDto) {
     const { limit, offset } = paginationQueryDto;
     return this.userRepository.find({
-      relations: ['issues', 'likeIssues'],
+      relations: [],
       skip: offset,
       take: limit,
     });

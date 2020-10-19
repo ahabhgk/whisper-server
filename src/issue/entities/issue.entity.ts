@@ -22,6 +22,9 @@ export class Issue {
   updatedAt: Date;
 
   @Column()
+  title: string;
+
+  @Column('text')
   content: string;
 
   @ManyToOne(
@@ -31,7 +34,7 @@ export class Issue {
   author: User;
 
   @Column()
-  tags: string;
+  tag: string;
 
   @ManyToMany(
     () => User,
