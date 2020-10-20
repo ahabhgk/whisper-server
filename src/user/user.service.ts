@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { Pub } from 'src/pub/entities/pub.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,6 +15,7 @@ import { User } from './entities/user.entity';
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Pub) private readonly pubRepository: Repository<Pub>,
   ) {}
 
   findAll(paginationQueryDto: PaginationQueryDto) {
@@ -53,5 +55,10 @@ export class UserService {
     }
     const newUser = this.userRepository.create(createUserDto);
     return this.userRepository.save(newUser);
+  }
+
+  async findOwnedPubs(id: number) {
+    const founder = await this.findOne(id);
+    return this.pubRepository.find({ founder });
   }
 }

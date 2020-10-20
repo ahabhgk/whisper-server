@@ -52,4 +52,9 @@ export class UserController {
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
+
+  @Get(':id/owned-pubs/')
+  findOwnedPubs(@Param('id') id: number) {
+    return this.userService.findOwnedPubs(id);
+  }
 }

@@ -18,15 +18,14 @@ export class IssueService {
   async create(userId: number, createIssueDto: CreateIssueDto) {
     const issue = this.issueRepository.create(createIssueDto);
     issue.author = await this.userRepository.findOne(userId);
-    this.issueRepository.save(issue);
-    return issue;
+    return this.issueRepository.save(issue);
   }
 
   async findRecent(paginationQueryDto: PaginationQueryDto) {
     const { limit, offset } = paginationQueryDto;
     const recentIssues = await this.issueRepository.find({
       relations: ['author', 'likers'],
-      order: { created: 'DESC' },
+      order: { createdAt: 'DESC' },
       skip: offset,
       take: limit,
     });

@@ -3,12 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Pub } from 'src/pub/entities/pub.entity';
 
 @Entity()
 export class Issue {
@@ -16,7 +16,7 @@ export class Issue {
   id: number;
 
   @CreateDateColumn()
-  created: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
@@ -39,8 +39,12 @@ export class Issue {
   @ManyToMany(
     () => User,
     liker => liker.likeIssues,
-    { cascade: true },
   )
-  @JoinTable()
+  pubs: Pub[];
+
+  @ManyToMany(
+    () => User,
+    liker => liker.likeIssues,
+  )
   likers: User[];
 }

@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Pub } from 'src/pub/entities/pub.entity';
 
 @Entity()
 export class User {
@@ -36,10 +37,21 @@ export class User {
   @Column({ default: '' })
   description: string;
 
+  @ManyToMany(
+    () => Pub,
+    pub => pub.users,
+  )
+  pubs: Pub[];
+
+  @OneToMany(
+    () => Pub,
+    pub => pub.founder,
+  )
+  ownedPubs: Pub[];
+
   @OneToMany(
     () => Issue,
     issue => issue.author,
-    { cascade: true },
   )
   issues: Issue[];
 
