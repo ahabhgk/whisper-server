@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -14,6 +16,9 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtPayload } from 'src/auth/auth.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RequestUser } from 'src/common/decorators/user.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -31,15 +36,17 @@ export class UserController {
   }
 
   @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'User #${id} not found' })
+  @ApiNotFoundResponse({ description: 'User not found' })
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.userService.findOne(id);
+  @UseGuards(JwtAuthGuard)
+  findOne(@RequestUser() payload: JwtPayload, @Param('id') id: number) {
+    if (payload.userId === id) return this.userService.findOne(id);
+    throw new ForbiddenException('Private information blocked');
   }
 
   @ApiCreatedResponse()
   @ApiBadRequestResponse({
-    description: 'The email used by the user ${email} already exists',
+    description: 'The email used by the user already exists',
   })
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -47,8 +54,9 @@ export class UserController {
   }
 
   @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'User #${id} not found' })
+  @ApiNotFoundResponse({ description: 'User not found' })
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }

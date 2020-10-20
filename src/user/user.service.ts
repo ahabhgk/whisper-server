@@ -18,13 +18,14 @@ export class UserService {
     @InjectRepository(Pub) private readonly pubRepository: Repository<Pub>,
   ) {}
 
-  findAll(paginationQueryDto: PaginationQueryDto) {
+  async findAll(paginationQueryDto: PaginationQueryDto) {
     const { limit, offset } = paginationQueryDto;
-    return this.userRepository.find({
+    const users = await this.userRepository.find({
       relations: [],
       skip: offset,
       take: limit,
     });
+    return users.map(this.filterUserPassword);
   }
 
   async findOne(id: number) {
@@ -32,17 +33,17 @@ export class UserService {
       relations: ['issues', 'likeIssues'],
     });
     if (!user) {
-      throw new NotFoundException(`User #${id} not found`);
+      throw new NotFoundException('User not found');
     }
-    return user;
+    return this.filterUserPassword(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.preload({ id, ...updateUserDto });
     if (!user) {
-      throw new NotFoundException(`User #${id} not found`);
+      throw new NotFoundException('User not found');
     }
-    return this.userRepository.save(user);
+    return this.filterUserPassword(await this.userRepository.save(user));
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -50,15 +51,25 @@ export class UserService {
     const oldUser = await this.userRepository.findOne({ email });
     if (oldUser) {
       throw new BadRequestException(
-        `The email used by the user ${email} already exists`,
+        'The email used by the user already exists',
       );
     }
     const newUser = this.userRepository.create(createUserDto);
-    return this.userRepository.save(newUser);
+    return this.filterUserPassword(await this.userRepository.save(newUser));
   }
 
   async findOwnedPubs(id: number) {
     const founder = await this.findOne(id);
     return this.pubRepository.find({ founder });
+  }
+
+  filterUserPassword(user: User) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
+  }
+
+  findOneByEmail(email: string) {
+    return this.userRepository.findOne({ email });
   }
 }

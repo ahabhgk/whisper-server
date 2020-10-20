@@ -16,9 +16,7 @@ export class PubService {
     const { name } = createPubDto;
     const existed = await this.pubRepository.findOne({ name });
     if (existed) {
-      throw new BadRequestException(
-        `The name used by the pub ${name} already exists`,
-      );
+      throw new BadRequestException('The name used by the pub already exists');
     }
     const pub = this.pubRepository.create(createPubDto);
     pub.founder = await this.userRepository.findOne(userId);
