@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { SearchDto } from 'src/common/dto/search.dto';
+import { Pub } from 'src/pub/entities/pub.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateIssueDto } from './dto/create-issue.dto';
@@ -13,10 +14,12 @@ export class IssueService {
     @InjectRepository(Issue)
     private readonly issueRepository: Repository<Issue>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Pub) private readonly pubRepository: Repository<Pub>,
   ) {}
 
-  async create(userId: number, createIssueDto: CreateIssueDto) {
+  async create(pubId: number, userId: number, createIssueDto: CreateIssueDto) {
     const issue = this.issueRepository.create(createIssueDto);
+    issue.pub = await this.pubRepository.findOne(pubId);
     issue.author = await this.userRepository.findOne(userId);
     return this.issueRepository.save(issue);
   }

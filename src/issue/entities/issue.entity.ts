@@ -30,17 +30,19 @@ export class Issue {
   @ManyToOne(
     () => User,
     author => author.issues,
+    { cascade: true },
   )
   author: User;
 
   @Column()
   tag: string;
 
-  @ManyToMany(
-    () => User,
-    liker => liker.likeIssues,
+  @ManyToOne(
+    () => Pub,
+    pub => pub.issues,
+    { cascade: true },
   )
-  pubs: Pub[];
+  pub: Pub;
 
   @ManyToMany(
     () => User,

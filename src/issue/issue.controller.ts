@@ -1,4 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { JwtPayload } from 'src/auth/auth.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RequestUser } from 'src/common/decorators/user.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { IssueService } from './issue.service';
@@ -7,12 +10,14 @@ import { IssueService } from './issue.service';
 export class IssueController {
   constructor(private readonly issueService: IssueService) {}
 
-  @Post(':userId')
+  @Post(':pubId')
+  @UseGuards(JwtAuthGuard)
   create(
-    @Param('userId') userId: number,
+    @Param('pubId') pubId: number,
+    @RequestUser() user: JwtPayload,
     @Body() createIssueDto: CreateIssueDto,
   ) {
-    return this.issueService.create(userId, createIssueDto);
+    return this.issueService.create(pubId, user.userId, createIssueDto);
   }
 
   @Get()

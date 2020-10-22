@@ -7,6 +7,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -45,9 +46,9 @@ export class Pub {
   @JoinTable()
   users: User[];
 
-  @ManyToMany(
+  @OneToMany(
     () => Issue,
-    issue => issue.pubs,
+    issue => issue.pub,
   )
   @JoinTable()
   issues: Issue[];

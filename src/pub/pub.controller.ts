@@ -1,7 +1,7 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { JwtPayload } from 'src/auth/auth.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestUser } from 'src/common/decorators/user.decorator';
-import { User } from 'src/user/entities/user.entity';
 import { CreatePubDto } from './dto/create-pub.dto';
 import { PubService } from './pub.service';
 
@@ -11,7 +11,13 @@ export class PubController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@RequestUser() user: User, @Body() createPubDto: CreatePubDto) {
-    return this.pubService.create(user.id, createPubDto);
+  create(@RequestUser() user: JwtPayload, @Body() createPubDto: CreatePubDto) {
+    return this.pubService.create(user.userId, createPubDto);
+  }
+
+  @Put(':pubId')
+  @UseGuards(JwtAuthGuard)
+  join(@Param('pubId') pubId: number, @RequestUser() user: JwtPayload) {
+    return this.pubService.join(pubId, user.userId)
   }
 }
