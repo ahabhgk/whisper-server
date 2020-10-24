@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { JwtPayload } from './auth.interface';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { Auth } from './entities/auth.entity';
-import { compare } from 'bcrypt'
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,7 @@ export class AuthService {
 
   async validateUser(username: string, password: string) {
     const auth = await this.authRepository.findOne(username);
-    if (auth && await compare(password, auth.password)) {
+    if (auth && (await compare(password, auth.password))) {
       return auth;
     }
     return null;

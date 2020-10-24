@@ -9,7 +9,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { hash } from 'bcrypt'
+import { hash } from 'bcrypt';
 
 @Entity()
 export class Auth {

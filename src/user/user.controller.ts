@@ -5,23 +5,20 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtPayload } from 'src/auth/auth.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestUser } from 'src/common/decorators/user.decorator';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
@@ -30,30 +27,29 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiOperation({ summary: '查找用户信息' })
   @ApiOkResponse()
-  @Get()
-  findAll(@Query() paginationQueryDto: PaginationQueryDto) {
-    return this.userService.findAll(paginationQueryDto);
-  }
-
-  @ApiOkResponse({ description: '查找用户信息' })
+  @ApiUnauthorizedResponse({ description: '缺少 access-token' })
   @ApiForbiddenResponse({ description: '只有用户自己可以查看自己的信息' })
   @ApiNotFoundResponse({ description: '用户未找到' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Get(':username')
   @UseGuards(JwtAuthGuard)
   findOne(
     @RequestUser() payload: JwtPayload,
     @Param('username') username: string,
   ) {
-    if (payload.username === username) return this.userService.findOne(username);
+    if (payload.username === username)
+      return this.userService.findOne(username);
     throw new ForbiddenException('Private information blocked');
   }
 
-  @ApiOkResponse({ description: '更新用户信息' })
+  @ApiOperation({ summary: '更新用户信息' })
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse({ description: '缺少 access-token' })
   @ApiForbiddenResponse({ description: '无权更改其他用户信息' })
   @ApiNotFoundResponse({ description: '用户未找到' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Patch(':username')
   @UseGuards(JwtAuthGuard)
   update(
@@ -61,7 +57,10 @@ export class UserController {
     @Param('username') username: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    if (payload.username === username) return this.userService.update(username, updateUserDto);
-    throw new ForbiddenException('No permission to change other user information')
+    if (payload.username === username)
+      return this.userService.update(username, updateUserDto);
+    throw new ForbiddenException(
+      'No permission to change other user information',
+    );
   }
 }
