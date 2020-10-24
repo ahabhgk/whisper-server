@@ -6,30 +6,27 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  PrimaryGeneratedColumn,
+  OneToOne,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Pub } from 'src/pub/entities/pub.entity';
+import { Auth } from 'src/auth/entities/auth.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  @OneToOne(
+    () => Auth,
+    auth => auth.username,
+  )
+  username: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @Column()
-  username: string;
-
-  @Column()
-  email: string;
-
-  @Column()
-  password: string;
 
   @Column({ default: '' })
   avatar: string;

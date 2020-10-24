@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
@@ -20,7 +22,6 @@ import { JwtPayload } from 'src/auth/auth.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestUser } from 'src/common/decorators/user.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
@@ -35,34 +36,32 @@ export class UserController {
     return this.userService.findAll(paginationQueryDto);
   }
 
-  @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'User not found' })
-  @Get(':id')
+  @ApiOkResponse({ description: '查找用户信息' })
+  @ApiForbiddenResponse({ description: '只有用户自己可以查看自己的信息' })
+  @ApiNotFoundResponse({ description: '用户未找到' })
+  @ApiBearerAuth()
+  @Get(':username')
   @UseGuards(JwtAuthGuard)
-  findOne(@RequestUser() payload: JwtPayload, @Param('id') id: number) {
-    if (payload.userId === id) return this.userService.findOne(id);
+  findOne(
+    @RequestUser() payload: JwtPayload,
+    @Param('username') username: string,
+  ) {
+    if (payload.username === username) return this.userService.findOne(username);
     throw new ForbiddenException('Private information blocked');
   }
 
-  @ApiCreatedResponse()
-  @ApiBadRequestResponse({
-    description: 'The email used by the user already exists',
-  })
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'User not found' })
-  @Patch(':id')
+  @ApiOkResponse({ description: '更新用户信息' })
+  @ApiForbiddenResponse({ description: '无权更改其他用户信息' })
+  @ApiNotFoundResponse({ description: '用户未找到' })
+  @ApiBearerAuth()
+  @Patch(':username')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
-  }
-
-  @Get(':id/owned-pubs/')
-  findOwnedPubs(@Param('id') id: number) {
-    return this.userService.findOwnedPubs(id);
+  update(
+    @RequestUser() payload: JwtPayload,
+    @Param('username') username: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    if (payload.username === username) return this.userService.update(username, updateUserDto);
+    throw new ForbiddenException('No permission to change other user information')
   }
 }

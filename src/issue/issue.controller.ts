@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtPayload } from 'src/auth/auth.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestUser } from 'src/common/decorators/user.decorator';
@@ -14,10 +22,10 @@ export class IssueController {
   @UseGuards(JwtAuthGuard)
   create(
     @Param('pubId') pubId: number,
-    @RequestUser() user: JwtPayload,
+    @RequestUser() payload: JwtPayload,
     @Body() createIssueDto: CreateIssueDto,
   ) {
-    return this.issueService.create(pubId, user.userId, createIssueDto);
+    return this.issueService.create(pubId, payload.username, createIssueDto);
   }
 
   @Get()

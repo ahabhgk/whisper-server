@@ -17,10 +17,14 @@ export class IssueService {
     @InjectRepository(Pub) private readonly pubRepository: Repository<Pub>,
   ) {}
 
-  async create(pubId: number, userId: number, createIssueDto: CreateIssueDto) {
+  async create(
+    pubId: number,
+    username: string,
+    createIssueDto: CreateIssueDto,
+  ) {
     const issue = this.issueRepository.create(createIssueDto);
     issue.pub = await this.pubRepository.findOne(pubId);
-    issue.author = await this.userRepository.findOne(userId);
+    issue.author = await this.userRepository.findOne(username);
     return this.issueRepository.save(issue);
   }
 

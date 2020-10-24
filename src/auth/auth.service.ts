@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from '../user/user.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserService } from 'src/user/user.service';
+import { Repository } from 'typeorm';
 import { JwtPayload } from './auth.interface';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { Auth } from './entities/auth.entity';
+import { compare } from 'bcrypt'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+    @InjectRepository(Auth) private readonly authRepository: Repository<Auth>,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.userService.findOneByEmail(email);
-    if (user && user.password === password) {
-      return this.userService.filterUserPassword(user);
+  async validateUser(username: string, password: string) {
+    const auth = await this.authRepository.findOne(username);
+    if (auth && await compare(password, auth.password)) {
+      return auth;
     }
     return null;
   }
 
-  async login(user: User) {
-    const payload: JwtPayload = { email: user.email, userId: user.id };
+  async create(createAuthDto: CreateAuthDto) {
+    const { username } = createAuthDto;
+    const oldAuth = await this.authRepository.findOne(username);
+    if (oldAuth) {
+      throw new BadRequestException('Username already exists');
+    }
+    const auth = this.authRepository.create(createAuthDto);
+    const user = this.userService.create(username);
+    this.authRepository.save(auth);
+    return user;
+  }
+
+  async login(auth: Auth) {
+    const payload: JwtPayload = { username: auth.username };
     return { access_token: this.jwtService.sign(payload) };
   }
 }

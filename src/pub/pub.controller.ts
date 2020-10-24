@@ -11,13 +11,16 @@ export class PubController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@RequestUser() user: JwtPayload, @Body() createPubDto: CreatePubDto) {
-    return this.pubService.create(user.userId, createPubDto);
+  create(
+    @RequestUser() payload: JwtPayload,
+    @Body() createPubDto: CreatePubDto,
+  ) {
+    return this.pubService.create(payload.username, createPubDto);
   }
 
   @Put(':pubId')
   @UseGuards(JwtAuthGuard)
-  join(@Param('pubId') pubId: number, @RequestUser() user: JwtPayload) {
-    return this.pubService.join(pubId, user.userId)
+  join(@Param('pubId') pubId: number, @RequestUser() payload: JwtPayload) {
+    return this.pubService.join(pubId, payload.username);
   }
 }

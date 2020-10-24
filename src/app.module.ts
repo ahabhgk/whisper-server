@@ -21,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
         database: process.env.MYSQL_NAME,
         autoLoadEntities: true,
         synchronize: true,
+        logging: true,
       }),
     }),
     UserModule,

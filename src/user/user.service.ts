@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { Pub } from 'src/pub/entities/pub.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -25,51 +24,36 @@ export class UserService {
       skip: offset,
       take: limit,
     });
-    return users.map(this.filterUserPassword);
+    return users;
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepository.findOne(id, {
+  async findOne(username: string) {
+    const user = await this.userRepository.findOne(username, {
       relations: ['issues', 'likeIssues', 'pubs', 'ownedPubs'],
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return this.filterUserPassword(user);
+    return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.preload({ id, ...updateUserDto });
+  async update(username: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.preload({
+      username,
+      ...updateUserDto,
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return this.filterUserPassword(await this.userRepository.save(user));
+    return this.userRepository.save(user);
   }
 
-  async create(createUserDto: CreateUserDto) {
-    const { email } = createUserDto;
-    const oldUser = await this.userRepository.findOne({ email });
+  async create(username: string) {
+    const oldUser = await this.userRepository.findOne(username);
     if (oldUser) {
-      throw new BadRequestException(
-        'The email used by the user already exists',
-      );
+      throw new BadRequestException('Username already exists');
     }
-    const newUser = this.userRepository.create(createUserDto);
-    return this.filterUserPassword(await this.userRepository.save(newUser));
-  }
-
-  async findOwnedPubs(id: number) {
-    const founder = await this.findOne(id);
-    return this.pubRepository.find({ founder });
-  }
-
-  filterUserPassword(user: User) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
-    return result;
-  }
-
-  findOneByEmail(email: string) {
-    return this.userRepository.findOne({ email });
+    const newUser = this.userRepository.create({ username });
+    return this.userRepository.save(newUser);
   }
 }
