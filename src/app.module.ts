@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { IssueModule } from './issue/issue.module';
 import { PubModule } from './pub/pub.module';
 import { AuthModule } from './auth/auth.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
     IssueModule,
     PubModule,
     AuthModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [],

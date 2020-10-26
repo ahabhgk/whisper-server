@@ -9,5 +9,6 @@ import { PubService } from './pub.service';
   imports: [TypeOrmModule.forFeature([Pub, User])],
   controllers: [PubController],
   providers: [PubService],
+  exports: [PubService],
 })
 export class PubModule {}

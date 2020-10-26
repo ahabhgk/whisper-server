@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
-import { SearchDto } from '../common/dto/search.dto';
 import { Pub } from '../pub/entities/pub.entity';
 import { User } from '../user/entities/user.entity';
 import { Like, Repository } from 'typeorm';
@@ -18,7 +17,7 @@ export class IssueService {
   ) {}
 
   async create(
-    pubId: number,
+    pubId: string,
     username: string,
     createIssueDto: CreateIssueDto,
   ) {
@@ -28,27 +27,32 @@ export class IssueService {
     return this.issueRepository.save(issue);
   }
 
-  async findRecent(paginationQueryDto: PaginationQueryDto) {
+  async findRecent(paginationQueryDto: PaginationQueryDto, username?: string) {
     const { limit, offset } = paginationQueryDto;
     const recentIssues = await this.issueRepository.find({
-      relations: ['author', 'likers'],
+      relations: ['author', 'likers', 'pub', 'pub.users'],
       order: { createdAt: 'DESC' },
       skip: offset,
       take: limit,
     });
-    return recentIssues.map(issue => ({
+    const userRecentIssues = recentIssues.filter(i =>
+      username
+        ? i.pub.users.some(u => u.username === username)
+        : !i.pub.private,
+    );
+    return userRecentIssues.map(issue => ({
       ...issue,
       likers: undefined,
       likeNumber: issue.likers.length,
     }));
   }
 
-  async search(searchDto: SearchDto) {
-    const likeStr = Like(`%${searchDto.keyword}%`);
+  async search(keyword: string) {
+    const likeStr = Like(`%${keyword}%`);
     const byTitleResults = await this.issueRepository.find({ title: likeStr });
     const byContentResults = await this.issueRepository.find({
       content: likeStr,
     });
-    return byTitleResults.concat(byContentResults);
+    return [...byTitleResults, ...byContentResults];
   }
 }

@@ -29,8 +29,10 @@ export class UserController {
 
   @ApiOperation({ summary: '查找用户信息' })
   @ApiOkResponse()
-  @ApiUnauthorizedResponse({ description: '缺少 access-token' })
-  @ApiForbiddenResponse({ description: '无权限，只有用户自己可以查看自己的信息' })
+  @ApiUnauthorizedResponse({ description: '未授权' })
+  @ApiForbiddenResponse({
+    description: '无权限，只有用户自己可以查看自己的信息',
+  })
   @ApiNotFoundResponse({ description: '用户未找到' })
   @ApiBearerAuth('access-token')
   @Get(':username')
@@ -39,14 +41,15 @@ export class UserController {
     @RequestUser() payload: JwtPayload,
     @Param('username') username: string,
   ) {
-    if (payload.username === username)
+    if (payload.username === username) {
       return this.userService.findOne(username);
+    }
     throw new ForbiddenException('No permission');
   }
 
   @ApiOperation({ summary: '更新用户信息' })
   @ApiOkResponse()
-  @ApiUnauthorizedResponse({ description: '缺少 access-token' })
+  @ApiUnauthorizedResponse({ description: '未授权' })
   @ApiForbiddenResponse({ description: '无权限，无权更改其他用户信息' })
   @ApiNotFoundResponse({ description: '用户未找到' })
   @ApiBearerAuth('access-token')
@@ -57,8 +60,9 @@ export class UserController {
     @Param('username') username: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    if (payload.username === username)
+    if (payload.username === username) {
       return this.userService.update(username, updateUserDto);
+    }
     throw new ForbiddenException('No permission');
   }
 }

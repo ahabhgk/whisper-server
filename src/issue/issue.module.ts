@@ -10,5 +10,6 @@ import { Pub } from '../pub/entities/pub.entity';
   imports: [TypeOrmModule.forFeature([User, Issue, Pub])],
   providers: [IssueService],
   controllers: [IssueController],
+  exports: [IssueService],
 })
 export class IssueModule {}

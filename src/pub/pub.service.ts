@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreatePubDto } from './dto/create-pub.dto';
 import { Pub } from './entities/pub.entity';
 
@@ -19,10 +19,11 @@ export class PubService {
       throw new BadRequestException('The name used by the pub already exists');
     }
     const pub = this.pubRepository.create(createPubDto);
+    console.log(pub);
     const user = await this.userRepository.findOne(username);
     pub.founder = user;
-    pub.users.push(user);
-    return this.pubRepository.save(pub);
+    await this.pubRepository.save(pub);
+    return this.join(pub.id, username);
   }
 
   async join(pubId: string, username: string) {
@@ -43,5 +44,14 @@ export class PubService {
     });
     pub.users = pub.users.filter(u => u.username !== username);
     return this.pubRepository.save(pub);
+  }
+
+  async search(keyword: string) {
+    const likeStr = Like(`%${keyword}%`);
+    const byNameResults = await this.pubRepository.find({ name: likeStr });
+    const byDescriptionResults = await this.pubRepository.find({
+      description: likeStr,
+    });
+    return [...byNameResults, ...byDescriptionResults];
   }
 }

@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -46,5 +47,6 @@ export class Issue {
     () => User,
     liker => liker.likeIssues,
   )
+  @JoinTable()
   likers: User[];
 }
