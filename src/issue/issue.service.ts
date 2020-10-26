@@ -53,6 +53,7 @@ export class IssueService {
     const byContentResults = await this.issueRepository.find({
       content: likeStr,
     });
-    return [...byTitleResults, ...byContentResults];
+    const byTagResults = await this.issueRepository.find({ tag: likeStr });
+    return [...byTitleResults, ...byContentResults, ...byTagResults];
   }
 }
