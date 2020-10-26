@@ -30,7 +30,6 @@ export class Issue {
   @ManyToOne(
     () => User,
     author => author.issues,
-    { cascade: true },
   )
   author: User;
 
@@ -40,7 +39,6 @@ export class Issue {
   @ManyToOne(
     () => Pub,
     pub => pub.issues,
-    { cascade: true },
   )
   pub: Pub;
 

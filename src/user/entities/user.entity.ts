@@ -10,8 +10,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Pub } from 'src/pub/entities/pub.entity';
-import { Auth } from 'src/auth/entities/auth.entity';
+import { Pub } from '../../pub/entities/pub.entity';
+import { Auth } from '../../auth/entities/auth.entity';
 
 @Entity()
 export class User {

@@ -16,9 +16,9 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtPayload } from 'src/auth/auth.interface';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RequestUser } from 'src/common/decorators/user.decorator';
+import { JwtPayload } from '../auth/auth.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RequestUser } from '../common/decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
@@ -30,7 +30,7 @@ export class UserController {
   @ApiOperation({ summary: '查找用户信息' })
   @ApiOkResponse()
   @ApiUnauthorizedResponse({ description: '缺少 access-token' })
-  @ApiForbiddenResponse({ description: '只有用户自己可以查看自己的信息' })
+  @ApiForbiddenResponse({ description: '无权限，只有用户自己可以查看自己的信息' })
   @ApiNotFoundResponse({ description: '用户未找到' })
   @ApiBearerAuth('access-token')
   @Get(':username')
@@ -41,13 +41,13 @@ export class UserController {
   ) {
     if (payload.username === username)
       return this.userService.findOne(username);
-    throw new ForbiddenException('Private information blocked');
+    throw new ForbiddenException('No permission');
   }
 
   @ApiOperation({ summary: '更新用户信息' })
   @ApiOkResponse()
   @ApiUnauthorizedResponse({ description: '缺少 access-token' })
-  @ApiForbiddenResponse({ description: '无权更改其他用户信息' })
+  @ApiForbiddenResponse({ description: '无权限，无权更改其他用户信息' })
   @ApiNotFoundResponse({ description: '用户未找到' })
   @ApiBearerAuth('access-token')
   @Patch(':username')
@@ -59,8 +59,6 @@ export class UserController {
   ) {
     if (payload.username === username)
       return this.userService.update(username, updateUserDto);
-    throw new ForbiddenException(
-      'No permission to change other user information',
-    );
+    throw new ForbiddenException('No permission');
   }
 }

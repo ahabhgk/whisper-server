@@ -1,5 +1,5 @@
-import { Issue } from 'src/issue/entities/issue.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Issue } from '../../issue/entities/issue.entity';
+import { User } from '../../user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -15,7 +15,7 @@ import {
 @Entity()
 export class Pub {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -35,7 +35,6 @@ export class Pub {
   @ManyToOne(
     () => User,
     user => user.ownedPubs,
-    { cascade: true },
   )
   founder: User;
 
@@ -50,6 +49,5 @@ export class Pub {
     () => Issue,
     issue => issue.pub,
   )
-  @JoinTable()
   issues: Issue[];
 }

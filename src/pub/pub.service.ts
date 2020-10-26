@@ -1,11 +1,6 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreatePubDto } from './dto/create-pub.dto';
 import { Pub } from './entities/pub.entity';
@@ -15,7 +10,6 @@ export class PubService {
   constructor(
     @InjectRepository(Pub) private readonly pubRepository: Repository<Pub>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private readonly userService: UserService,
   ) {}
 
   async create(username: string, createPubDto: CreatePubDto) {
@@ -25,22 +19,29 @@ export class PubService {
       throw new BadRequestException('The name used by the pub already exists');
     }
     const pub = this.pubRepository.create(createPubDto);
-    pub.founder = await this.userRepository.findOne(username);
+    const user = await this.userRepository.findOne(username);
+    pub.founder = user;
+    pub.users.push(user);
     return this.pubRepository.save(pub);
   }
 
-  async join(pubId: number, username: string) {
-    const user = await this.userRepository.findOne(username, {
-      relations: ['pubs'],
-    });
-    if (!user) throw new NotFoundException('User not fount');
+  async join(pubId: string, username: string) {
+    const user = await this.userRepository.findOne(username);
     const pub = await this.pubRepository.findOne(pubId, {
-      relations: ['users'],
+      relations: ['users', 'founder'],
     });
-    if (!pub) throw new NotFoundException('Pub not fount');
-    user.pubs.push(pub);
+    if (pub.users.filter(u => u.username === username).length === 1) {
+      return this.pubRepository.save(pub);
+    }
     pub.users.push(user);
-    this.userRepository.save(user);
+    return this.pubRepository.save(pub);
+  }
+
+  async exit(pubId: string, username: string) {
+    const pub = await this.pubRepository.findOne(pubId, {
+      relations: ['users', 'founder'],
+    });
+    pub.users = pub.users.filter(u => u.username !== username);
     return this.pubRepository.save(pub);
   }
 }

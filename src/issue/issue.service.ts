@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { SearchDto } from 'src/common/dto/search.dto';
-import { Pub } from 'src/pub/entities/pub.entity';
-import { User } from 'src/user/entities/user.entity';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { SearchDto } from '../common/dto/search.dto';
+import { Pub } from '../pub/entities/pub.entity';
+import { User } from '../user/entities/user.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { Issue } from './entities/issue.entity';

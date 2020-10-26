@@ -7,10 +7,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtPayload } from 'src/auth/auth.interface';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RequestUser } from 'src/common/decorators/user.decorator';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { JwtPayload } from '../auth/auth.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RequestUser } from '../common/decorators/user.decorator';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { IssueService } from './issue.service';
 

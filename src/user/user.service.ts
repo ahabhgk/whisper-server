@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { Pub } from 'src/pub/entities/pub.entity';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { Pub } from '../pub/entities/pub.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
