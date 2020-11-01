@@ -18,7 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtPayload } from '../auth/auth.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RequestUser } from '../common/decorators/user.decorator';
+import { RequestUser } from '../common/decorators/request-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 

@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtPayload } from '../auth/auth.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RequestUser } from '../common/decorators/user.decorator';
+import { RequestUser } from '../common/decorators/request-user.decorator';
 import { CreatePubDto } from './dto/create-pub.dto';
 import { PubService } from './pub.service';
 

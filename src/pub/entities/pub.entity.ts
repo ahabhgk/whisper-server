@@ -11,33 +11,43 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 
+@ObjectType()
 @Entity()
 export class Pub {
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Field()
   @CreateDateColumn()
   createdAt: Date;
 
+  @Field()
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Field()
   @Column()
   name: string;
 
+  @Field()
   @Column()
   description: string;
 
+  @Field()
   @Column()
   private: boolean;
 
+  @Field(() => User)
   @ManyToOne(
     () => User,
     user => user.ownedPubs,
   )
   founder: User;
 
+  @Field(() => [User])
   @ManyToMany(
     () => User,
     user => user.pubs,
@@ -45,6 +55,7 @@ export class Pub {
   @JoinTable()
   users: User[];
 
+  @Field(() => [Issue])
   @OneToMany(
     () => Issue,
     issue => issue.pub,

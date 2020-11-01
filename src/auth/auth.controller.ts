@@ -14,7 +14,7 @@ import {
   ApiUnauthorizedResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RequestUser } from '../common/decorators/user.decorator';
+import { RequestUser } from '../common/decorators/request-user.decorator';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { Auth } from './entities/auth.entity';

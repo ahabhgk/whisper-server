@@ -1,47 +1,5 @@
 # whisper-server
 
-## DB
-
-### User
-
-- username: string
-- email: string
-- password: string
-- avatar: string
-- description: string
-- issues: Issue[]
-- comments: Comment[]
-- replies: Reply[]
-
-### Issue
-
-- content: string
-- author: User
-- comments: Comment[]
-- likers: User[]
-- dislikers: User[]
-- collectors: User[]
-- sharers: User[]
-- tags: string
-
-### Comment
-
-- content: string
-- author: User
-- issue: Issue
-- replies: Reply[]
-- likers: User[]
-- dislikers: User[]
-
-### Reply
-
-- content: string
-- author: User
-- comment: Comment
-- reply: Reply
-- likers: User[]
-- dislikers: User[]
-
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.

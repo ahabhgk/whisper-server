@@ -54,4 +54,11 @@ export class PubService {
     });
     return [...byNameResults, ...byDescriptionResults];
   }
+
+  async findAllByUsername(username: string) {
+    const pubs = await this.pubRepository.find({
+      relations: ['users', 'founder'],
+    });
+    return pubs.filter(p => p.users.some(u => u.username === username));
+  }
 }

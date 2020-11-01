@@ -1,0 +1,46 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Pub {
+  id: ID!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  description: String!
+  private: Boolean!
+  founder: User!
+  users: [User!]!
+  issues: [Issue!]!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+type Issue {
+  id: ID!
+  createdAt: Date!
+  updatedAt: Date!
+  title: String!
+  content: String!
+  author: User!
+  tag: String!
+  pub: Pub!
+  likers: [User!]!
+}
+
+type User {
+  username: String!
+  createdAt: Date!
+  updatedAt: Date!
+  avatar: String!
+  description: String!
+  pubs: [Pub!]!
+  ownedPubs: [Pub!]!
+  issues: [Issue!]!
+  likeIssues: [Issue!]!
+}
+
+type Query {
+  user(username: String!): User!
+}
