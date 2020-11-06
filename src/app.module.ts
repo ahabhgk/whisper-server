@@ -12,23 +12,21 @@ import { CommonModule } from './common/common.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `${process.env.NODE_ENV || 'development'}.env`,
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
-        type: 'mysql',
-        host: process.env.MYSQL_HOST,
-        port: +process.env.MYSQL_POST,
-        username: process.env.MYSQL_USERNAME,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_NAME,
+        type: process.env.NODE_ENV === 'production' ? 'postgres' : 'mysql',
+        url: process.env.DATABASE_URL,
         autoLoadEntities: true,
         synchronize: true,
         logging: true,
       }),
     }),
     GraphQLModule.forRoot({
-      autoSchemaFile: 'schema.gql',
+      autoSchemaFile: 'src/schema.gql',
+      playground: true,
+      debug: true,
     }),
     UserModule,
     IssueModule,
